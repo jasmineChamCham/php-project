@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use L5Swagger\Http\Controllers\SwaggerController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,7 @@ Route::get('/', function () {
 
 # Swagger 
 Route::get('/api/documentation', [SwaggerController::class, 'api']);
+
+# Authen Twitter
+Route::get('/login/twitter', [AuthController::class, 'redirectToTwitter'])->name('login.twitter');
+Route::get('/login/twitter/callback', [AuthController::class, 'handleTwitterCallback'])->name('login.twitter.callback');

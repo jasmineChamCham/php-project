@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TweetsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -24,5 +25,12 @@ Route::post('/users', [UserController::class, 'createUser']);
 Route::patch('/users/{id}/password', [UserController::class, 'patchUserById']); 
 Route::put('/users/{id}', [UserController::class, 'updateUserById']);
 Route::get('/users', [UserController::class, 'getUsers']);
-Route::get('/users/{id}', [UserController::class, 'getUserById']);  
+Route::get('/users/{id}', [UserController::class, 'getUserById']);
+
+# Tweets
+Route::post('/tweets', [TweetsController::class,'postTweet']);
+Route::delete('/tweets/{id}', [TweetsController::class, 'deleteTweetById']);
+Route::get('/tweets/{id}', action: [TweetsController::class, 'getTweetById']);
+Route::get('/my-tweets', action: [TweetsController::class, 'getMyTweets']);
+Route::get('/tweets-interactions/{id}', action: [TweetsController::class, 'getTweetInteractions']);
   
