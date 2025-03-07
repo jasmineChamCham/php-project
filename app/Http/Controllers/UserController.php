@@ -2,50 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * @OA\Info(
- *      version="1.0.0",
- *      title="Laravel API",
- *      description="API Documentation with Swagger"
- * )
- */
 class UserController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/users",
-     *     summary="Get list of users",
-     *     tags={"Users"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(
-     *                 type="object",
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="name", type="string", example="John Doe"),
-     *                 @OA\Property(property="email", type="string", example="john@example.com"),
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     )
-     * )
-     */
-    public function getUsers()
+    private $userService;
+
+    public function __construct(UserService $userService)
     {
-        return response()->json(User::all(), 200);
+        $this->userService = $userService;
     }
 
-    public function createUser(Request $request)
+    public function index()
+    {
+        $result = $this->userService->index();
+        return response()->json($result, 200);
+    }
+
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -60,23 +36,14 @@ class UserController extends Controller
             ], 422);
         }
 
-        // Create user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $result = $this->userService->store($request->name, $request->email, $request->password);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User created successfully',
-            'user' => $user
-        ], 201);
+        return response()->json($result, 201);
     }
 
-    public function getUserById($id)
+    public function show($id)
     {
-        $user = User::find($id);
+        $user = $this->userService->show($id);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -85,34 +52,20 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function patchUserById(Request $request, $id)
+    public function update($id, Request $request)
+    {
+        $result = $this->userService->update($id, ['name'=>($request->name), 'email' => ($request->email), 'password'=> ($request->password)]);
+        return response()->json($result);
+    }
+
+    public function changePassword($id, Request $request)
     {
         $request->validate([
             'password' => 'required|min:8|confirmed', 
         ]);
 
-        $user = User::find($id);
+        $result = $this->userService->changePassword($id, $request->password);
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        return response()->json(['message' => 'Password updated successfully']);
-    }
-
-    public function updateUserById(Request $request, $id)
-    {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        $user->update($request->all());
-
-        return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+        return response()->json($result);
     }
 }

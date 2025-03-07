@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\TweetsController;
+use App\Http\Controllers\TweetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -21,16 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 # Users 
-Route::post('/users', [UserController::class, 'createUser']);
-Route::patch('/users/{id}/password', [UserController::class, 'patchUserById']); 
-Route::put('/users/{id}', [UserController::class, 'updateUserById']);
-Route::get('/users', [UserController::class, 'getUsers']);
-Route::get('/users/{id}', [UserController::class, 'getUserById']);
+Route::resource('users', UserController::class);
+Route::patch('users/{id}', [UserController::class, 'changePassword']);
+
 
 # Tweets
-Route::post('/tweets', [TweetsController::class,'postTweet']);
-Route::delete('/tweets/{id}', [TweetsController::class, 'deleteTweetById']);
-Route::get('/tweets/{id}', action: [TweetsController::class, 'getTweetById']);
-Route::get('/my-tweets', action: [TweetsController::class, 'getMyTweets']);
-Route::get('/tweets-interactions/{id}', action: [TweetsController::class, 'getTweetInteractions']);
-  
+Route::resource('tweets', TweetController::class);
+Route::get('my-tweets', [TweetController::class, 'myTweets']);
+Route::get('tweets-interactions/{id}', [TweetController::class, 'tweetInteractions']);

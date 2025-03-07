@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\User\UserRepositoryImplementation;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -9,9 +12,8 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
-        //
+    public function register() {
+        $this->app->bind(UserRepositoryInterface::class, UserRepositoryImplementation::class);
     }
 
     /**
